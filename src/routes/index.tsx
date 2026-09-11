@@ -1426,6 +1426,32 @@ function Index() {
                 Aidat Talebe Listesi PDF İndir
               </span>
             </button>
+            <button
+              type="button"
+              className="flex w-full items-center gap-3 rounded-md border border-border/60 px-3 py-2 text-left transition-colors hover:bg-accent"
+              onClick={() => {
+                setAyarlarAcik(false);
+                setTimeout(() => aidatListeExcel(), 150);
+              }}
+            >
+              <FileDown className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">
+                Aidat Talebe Listesi Excel İndir
+              </span>
+            </button>
+            <button
+              type="button"
+              className="flex w-full items-center gap-3 rounded-md border border-border/60 px-3 py-2 text-left transition-colors hover:bg-accent"
+              onClick={() => {
+                setAyarlarAcik(false);
+                setTimeout(() => void aidatExcel(), 150);
+              }}
+            >
+              <FileDown className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">
+                Aidat Listesini Excel İndir
+              </span>
+            </button>
             {hocaModu && (
               <>
                 <button
