@@ -125,6 +125,51 @@ export default function AidatPanel({
   const buAy =
     yil === simdi.getFullYear() && ay === simdi.getMonth();
 
+  const ayEtiket = `${AY_ADLARI[ay]} ${yil}`;
+  const grupAdi = aktifGrup?.ad ?? "Tüm gruplar";
+
+  const pdfIndir = () => {
+    listeYazdir({
+      altBaslik: `Aidat Takip Listesi · ${ayEtiket}`,
+      bilgi: [
+        `Grup: ${grupAdi}`,
+        `Aylık aidat: ${paraFmt(tutar)}`,
+        `Ödeyen: ${ozet.odeyen}/${ozet.toplam}`,
+        `Toplanan: ${paraFmt(ozet.tahsil)}`,
+      ],
+      sutunlar: [
+        { baslik: "#", genislik: "8%", hiza: "center" },
+        { baslik: "Talebe", genislik: "46%" },
+        { baslik: "Tutar", genislik: "23%", hiza: "center" },
+        { baslik: "Durum", genislik: "23%", hiza: "center" },
+      ],
+      satirlar: gorunenTalebeler.map((t, i) => {
+        const odendi = !!t.aidat?.[ayKey];
+        const satir = [i + 1, t.isim, paraFmt(tutar), odendi ? "Ödedi" : "Ödemedi"];
+        return odendi ? satir : { hucreler: satir, className: "kirmizi" };
+      }),
+    });
+  };
+
+  const excelDisaAktar = () => {
+    excelIndir(
+      `aidat-takip-${ayKey}`,
+      `Aidat ${ayEtiket}`,
+      [
+        { baslik: "#", genislik: 6 },
+        { baslik: "Talebe", genislik: 28 },
+        { baslik: "Tutar (Birr)", genislik: 14 },
+        { baslik: "Durum", genislik: 12 },
+      ],
+      gorunenTalebeler.map((t, i) => [
+        i + 1,
+        t.isim,
+        tutar,
+        t.aidat?.[ayKey] ? "Ödedi" : "Ödemedi",
+      ]),
+    );
+  };
+
   return (
     <div>
       {/* Aidat tutarı */}
