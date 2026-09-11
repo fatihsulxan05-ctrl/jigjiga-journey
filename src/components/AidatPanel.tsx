@@ -228,6 +228,24 @@ export default function AidatPanel({
         </p>
       )}
 
+      <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={pdfIndir}
+          className="gap-1.5 text-xs sm:text-sm"
+        >
+          <FileDown className="h-4 w-4" /> PDF İndir
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={excelDisaAktar}
+          className="gap-1.5 text-xs sm:text-sm"
+        >
+          <FileDown className="h-4 w-4" /> Excel İndir
+        </Button>
+      </div>
 
       {/* Özet */}
       <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
