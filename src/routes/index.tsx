@@ -920,8 +920,8 @@ function Index() {
                 <colgroup>
                   <col className="w-[6%]" />
                   <col className="w-[9%]" />
-                  <col className="w-[30%]" />
-                  <col className="w-[8%]" />
+                  <col className="w-[26%]" />
+                  <col className="w-[12%]" />
                   <col className="w-[14%]" />
                   <col className="w-[16%]" />
                   <col className="w-[17%]" />
