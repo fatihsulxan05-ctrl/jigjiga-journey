@@ -28,6 +28,9 @@ import {
   type Talebe,
 } from "@/lib/talebeler";
 import { bashHarfler } from "@/lib/foto";
+import { listeYazdir } from "@/lib/pdf";
+import { excelIndir } from "@/lib/excel";
+import { FileDown } from "lucide-react";
 
 const AY_ADLARI = [
   "Ocak",
@@ -121,6 +124,51 @@ export default function AidatPanel({
 
   const buAy =
     yil === simdi.getFullYear() && ay === simdi.getMonth();
+
+  const ayEtiket = `${AY_ADLARI[ay]} ${yil}`;
+  const grupAdi = aktifGrup?.ad ?? "Tüm gruplar";
+
+  const pdfIndir = () => {
+    listeYazdir({
+      altBaslik: `Aidat Takip Listesi · ${ayEtiket}`,
+      bilgi: [
+        `Grup: ${grupAdi}`,
+        `Aylık aidat: ${paraFmt(tutar)}`,
+        `Ödeyen: ${ozet.odeyen}/${ozet.toplam}`,
+        `Toplanan: ${paraFmt(ozet.tahsil)}`,
+      ],
+      sutunlar: [
+        { baslik: "#", genislik: "8%", hiza: "center" },
+        { baslik: "Talebe", genislik: "46%" },
+        { baslik: "Tutar", genislik: "23%", hiza: "center" },
+        { baslik: "Durum", genislik: "23%", hiza: "center" },
+      ],
+      satirlar: gorunenTalebeler.map((t, i) => {
+        const odendi = !!t.aidat?.[ayKey];
+        const satir = [i + 1, t.isim, paraFmt(tutar), odendi ? "Ödedi" : "Ödemedi"];
+        return odendi ? satir : { hucreler: satir, className: "kirmizi" };
+      }),
+    });
+  };
+
+  const excelDisaAktar = () => {
+    excelIndir(
+      `aidat-takip-${ayKey}`,
+      `Aidat ${ayEtiket}`,
+      [
+        { baslik: "#", genislik: 6 },
+        { baslik: "Talebe", genislik: 28 },
+        { baslik: "Tutar (Birr)", genislik: 14 },
+        { baslik: "Durum", genislik: 12 },
+      ],
+      gorunenTalebeler.map((t, i) => [
+        i + 1,
+        t.isim,
+        tutar,
+        t.aidat?.[ayKey] ? "Ödedi" : "Ödemedi",
+      ]),
+    );
+  };
 
   return (
     <div>
@@ -225,6 +273,24 @@ export default function AidatPanel({
         </p>
       )}
 
+      <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={pdfIndir}
+          className="gap-1.5 text-xs sm:text-sm"
+        >
+          <FileDown className="h-4 w-4" /> PDF İndir
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={excelDisaAktar}
+          className="gap-1.5 text-xs sm:text-sm"
+        >
+          <FileDown className="h-4 w-4" /> Excel İndir
+        </Button>
+      </div>
 
       {/* Özet */}
       <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
