@@ -715,6 +715,55 @@ function Index() {
     });
   };
 
+  const aidatListeExcel = () => {
+    excelIndir(
+      "aidat-talebe-listesi",
+      "Aidat Talebe Listesi",
+      [
+        { baslik: "Sıra No", genislik: 8 },
+        { baslik: "Talebe İsmi", genislik: 28 },
+        { baslik: "Yaş", genislik: 8 },
+        { baslik: "Sınıf", genislik: 14 },
+        { baslik: "Grup", genislik: 16 },
+        { baslik: "Telefon", genislik: 18 },
+      ],
+      aidatTalebeler.map((t, i) => [
+        i + 1,
+        t.isim,
+        yasHesapla(t.dogum) ?? "—",
+        t.sinif || "—",
+        t.grup ? (GRUPLAR.find((g) => g.id === t.grup)?.ad ?? "—") : "—",
+        t.telefon || "—",
+      ]),
+    );
+  };
+
+  const aidatExcel = async () => {
+    const tutar = await aidatTutariniOku();
+    const simdi = new Date();
+    const ayKey = `${simdi.getFullYear()}-${String(simdi.getMonth() + 1).padStart(2, "0")}`;
+    const liste =
+      grupFiltre === "hepsi"
+        ? aidatTalebeler
+        : aidatTalebeler.filter((t) => t.grup === grupFiltre);
+    excelIndir(
+      `aidat-takip-${ayKey}`,
+      "Aidat Takip",
+      [
+        { baslik: "#", genislik: 6 },
+        { baslik: "Talebe", genislik: 28 },
+        { baslik: "Tutar (Birr)", genislik: 14 },
+        { baslik: "Durum", genislik: 12 },
+      ],
+      liste.map((t, i) => [
+        i + 1,
+        t.isim,
+        tutar,
+        t.aidat?.[ayKey] ? "Ödedi" : "Ödemedi",
+      ]),
+    );
+  };
+
   return (
     <DilContext.Provider value={dil}>
     <div className="min-h-screen bg-background">
