@@ -765,6 +765,81 @@ function Index() {
     );
   };
 
+  const aidatListeIceAktar = async (dosya: File) => {
+    try {
+      const satirlar = await excelOku(dosya);
+      if (satirlar.length === 0) {
+        toast.error("Excel dosyasında satır bulunamadı.");
+        return;
+      }
+      const al = (r: Record<string, string>, ...adlar: string[]) => {
+        for (const a of adlar) {
+          const k = Object.keys(r).find(
+            (x) => x.toLocaleLowerCase("tr") === a.toLocaleLowerCase("tr"),
+          );
+          if (k && r[k] !== "" && r[k] !== "—") return r[k];
+        }
+        return "";
+      };
+      let guncellenen = 0;
+      let eklenen = 0;
+      let enBuyukSira = talebeler.reduce((m, t) => Math.max(m, t.sira ?? 0), 0);
+
+      for (const r of satirlar) {
+        const isim = al(r, "Talebe İsmi", "Talebe", "İsim", "Isim");
+        if (!isim) continue;
+        const sinif = al(r, "Sınıf", "Sinif");
+        const telefon = al(r, "Telefon");
+        const grupAd = al(r, "Grup");
+        const grup = GRUPLAR.find(
+          (g) =>
+            g.ad.toLocaleLowerCase("tr") === grupAd.toLocaleLowerCase("tr") ||
+            g.id === grupAd,
+        )?.id;
+
+        const mevcut = talebeler.find(
+          (t) =>
+            t.isim.trim().toLocaleLowerCase("tr") ===
+            isim.toLocaleLowerCase("tr"),
+        );
+
+        const patch: Record<string, unknown> = {};
+        if (sinif) patch.sinif = sinif;
+        if (telefon) patch.telefon = telefon;
+        if (grup) patch.grup = grup;
+
+        if (mevcut) {
+          if (Object.keys(patch).length > 0) {
+            await talebeGuncelle(mevcut.id, patch);
+            guncellenen++;
+          }
+        } else {
+          enBuyukSira++;
+          await talebeEkle({
+            isim,
+            kiraat: false,
+            sayfa: 1,
+            gecmis: [{ t: Date.now(), sayfa: 1 }],
+            sira: enBuyukSira,
+            yon: "alttan",
+            fikihKonu: 1,
+            hadisNo: 1,
+            aidatSadece: true,
+            aidatHaric: false,
+            ...patch,
+          });
+          eklenen++;
+        }
+      }
+      toast.success(
+        `Excel içe aktarıldı · ${guncellenen} güncellendi, ${eklenen} yeni talebe`,
+      );
+    } catch (e) {
+      console.error(e);
+      toast.error("Excel dosyası okunamadı.");
+    }
+  };
+
   return (
     <DilContext.Provider value={dil}>
     <div className="min-h-screen bg-background">
