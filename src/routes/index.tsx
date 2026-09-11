@@ -955,14 +955,24 @@ function Index() {
               <h2 className="text-base font-semibold text-foreground sm:text-lg">
                 Aidat Talebe Listesi
               </h2>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => aidatListePdf()}
-                className="gap-1.5 text-xs sm:text-sm"
-              >
-                <FileDown className="h-4 w-4" /> PDF İndir
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => aidatListePdf()}
+                  className="gap-1.5 text-xs sm:text-sm"
+                >
+                  <FileDown className="h-4 w-4" /> PDF İndir
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => aidatListeExcel()}
+                  className="gap-1.5 text-xs sm:text-sm"
+                >
+                  <FileDown className="h-4 w-4" /> Excel İndir
+                </Button>
+              </div>
             </div>
             <Card className="overflow-hidden">
               <div className="overflow-x-auto">
