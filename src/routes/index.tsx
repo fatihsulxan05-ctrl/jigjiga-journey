@@ -1047,6 +1047,28 @@ function Index() {
                 >
                   <FileDown className="h-4 w-4" /> Excel İndir
                 </Button>
+                {hocaModu && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    asChild
+                    className="gap-1.5 text-xs sm:text-sm"
+                  >
+                    <label className="cursor-pointer">
+                      <FileDown className="h-4 w-4 rotate-180" /> Excel Yükle
+                      <input
+                        type="file"
+                        accept=".xlsx,.xls"
+                        className="hidden"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          e.target.value = "";
+                          if (f) void aidatListeIceAktar(f);
+                        }}
+                      />
+                    </label>
+                  </Button>
+                )}
               </div>
             </div>
             <Card className="overflow-hidden">
