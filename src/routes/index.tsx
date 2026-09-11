@@ -90,6 +90,7 @@ import {
 import { dosyaFotoDataUrl, bashHarfler } from "@/lib/foto";
 import { aidatTutariniOku } from "@/lib/talebeler";
 import { listeYazdir } from "@/lib/pdf";
+import { excelIndir } from "@/lib/excel";
 import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/")({
@@ -715,6 +716,55 @@ function Index() {
     });
   };
 
+  const aidatListeExcel = () => {
+    excelIndir(
+      "aidat-talebe-listesi",
+      "Aidat Talebe Listesi",
+      [
+        { baslik: "Sıra No", genislik: 8 },
+        { baslik: "Talebe İsmi", genislik: 28 },
+        { baslik: "Yaş", genislik: 8 },
+        { baslik: "Sınıf", genislik: 14 },
+        { baslik: "Grup", genislik: 16 },
+        { baslik: "Telefon", genislik: 18 },
+      ],
+      aidatTalebeler.map((t, i) => [
+        i + 1,
+        t.isim,
+        yasHesapla(t.dogum) ?? "—",
+        t.sinif || "—",
+        t.grup ? (GRUPLAR.find((g) => g.id === t.grup)?.ad ?? "—") : "—",
+        t.telefon || "—",
+      ]),
+    );
+  };
+
+  const aidatExcel = async () => {
+    const tutar = await aidatTutariniOku();
+    const simdi = new Date();
+    const ayKey = `${simdi.getFullYear()}-${String(simdi.getMonth() + 1).padStart(2, "0")}`;
+    const liste =
+      grupFiltre === "hepsi"
+        ? aidatTalebeler
+        : aidatTalebeler.filter((t) => t.grup === grupFiltre);
+    excelIndir(
+      `aidat-takip-${ayKey}`,
+      "Aidat Takip",
+      [
+        { baslik: "#", genislik: 6 },
+        { baslik: "Talebe", genislik: 28 },
+        { baslik: "Tutar (Birr)", genislik: 14 },
+        { baslik: "Durum", genislik: 12 },
+      ],
+      liste.map((t, i) => [
+        i + 1,
+        t.isim,
+        tutar,
+        t.aidat?.[ayKey] ? "Ödedi" : "Ödemedi",
+      ]),
+    );
+  };
+
   return (
     <DilContext.Provider value={dil}>
     <div className="min-h-screen bg-background">
@@ -905,14 +955,24 @@ function Index() {
               <h2 className="text-base font-semibold text-foreground sm:text-lg">
                 Aidat Talebe Listesi
               </h2>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => aidatListePdf()}
-                className="gap-1.5 text-xs sm:text-sm"
-              >
-                <FileDown className="h-4 w-4" /> PDF İndir
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => aidatListePdf()}
+                  className="gap-1.5 text-xs sm:text-sm"
+                >
+                  <FileDown className="h-4 w-4" /> PDF İndir
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => aidatListeExcel()}
+                  className="gap-1.5 text-xs sm:text-sm"
+                >
+                  <FileDown className="h-4 w-4" /> Excel İndir
+                </Button>
+              </div>
             </div>
             <Card className="overflow-hidden">
               <div className="overflow-x-auto">
@@ -1364,6 +1424,32 @@ function Index() {
               <FileDown className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">
                 Aidat Talebe Listesi PDF İndir
+              </span>
+            </button>
+            <button
+              type="button"
+              className="flex w-full items-center gap-3 rounded-md border border-border/60 px-3 py-2 text-left transition-colors hover:bg-accent"
+              onClick={() => {
+                setAyarlarAcik(false);
+                setTimeout(() => aidatListeExcel(), 150);
+              }}
+            >
+              <FileDown className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">
+                Aidat Talebe Listesi Excel İndir
+              </span>
+            </button>
+            <button
+              type="button"
+              className="flex w-full items-center gap-3 rounded-md border border-border/60 px-3 py-2 text-left transition-colors hover:bg-accent"
+              onClick={() => {
+                setAyarlarAcik(false);
+                setTimeout(() => void aidatExcel(), 150);
+              }}
+            >
+              <FileDown className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">
+                Aidat Listesini Excel İndir
               </span>
             </button>
             {hocaModu && (
