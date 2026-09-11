@@ -90,7 +90,7 @@ import {
 import { dosyaFotoDataUrl, bashHarfler } from "@/lib/foto";
 import { aidatTutariniOku } from "@/lib/talebeler";
 import { listeYazdir } from "@/lib/pdf";
-import { excelIndir } from "@/lib/excel";
+import { excelIndir, excelOku } from "@/lib/excel";
 import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/")({
