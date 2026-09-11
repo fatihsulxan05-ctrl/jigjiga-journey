@@ -15,3 +15,23 @@ export function excelIndir(
   XLSX.utils.book_append_sheet(wb, ws, sayfaAdi.slice(0, 31));
   XLSX.writeFile(wb, `${dosyaAdi}.xlsx`);
 }
+
+export async function excelOku(
+  dosya: File,
+): Promise<Record<string, string>[]> {
+  const buf = await dosya.arrayBuffer();
+  const wb = XLSX.read(buf, { type: "array" });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  if (!ws) return [];
+  const satirlar = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, {
+    defval: "",
+    raw: false,
+  });
+  return satirlar.map((r) => {
+    const o: Record<string, string> = {};
+    Object.entries(r).forEach(([k, v]) => {
+      o[String(k).trim()] = String(v ?? "").trim();
+    });
+    return o;
+  });
+}
